@@ -104,8 +104,13 @@ body {
 }
 
 /* show page */
-.btn-edit , .btn-delete{
+.btn-edit {
     background-color: #fe424d !important;
+    border: none !important; 
+} 
+
+.btn-delete {
+    background-color: #222222 !important;
     border: none !important; 
 } 
 
