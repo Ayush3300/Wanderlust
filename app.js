@@ -7,10 +7,15 @@ const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/expressError.js");
 const session = require("express-session")
 const flash = require("connect-flash")
+const passport = require("passport")
+const LocalStrategy = require("passport-local")
+const User = require("./models/user.model.js")
 
 
-const listings = require("./routes/listing.route.js");
-const reviews = require("./routes/review.route.js");
+
+const listingRouter = require("./routes/listing.route.js");
+const reviewRouter = require("./routes/review.route.js");
+const userRouter = require("./routes/user.route.js")
 
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
@@ -51,6 +56,15 @@ app.get("/", (req, res) => {
 app.use(session(sessionOptions))
 app.use(flash())
 
+app.use(passport.initialize())
+app.use(passport.session())
+passport.use(new LocalStrategy(User.authenticate()))
+
+//all the info related to user store in to the session is called as serialize
+//all the info related to user unstore or remove from the session is called as deserialize
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
+
 app.use((req,res,next)=>{
   res.locals.success = req.flash("success")
   res.locals.error = req.flash("error")
@@ -58,8 +72,10 @@ app.use((req,res,next)=>{
 })
 
 
-app.use("/listings", listings);
-app.use("/listings/:id/reviews", reviews);
+
+app.use("/listings", listingRouter);
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/",userRouter)
 
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found"));
@@ -75,3 +91,13 @@ app.use((err, req, res, next) => {
 app.listen(8080, () => {
   console.log("server is listening to port 8080");
 });
+
+// app.get("/demoUser",async(req,res)=>{
+//   let fakeUser = new User({
+//     email : "student@gmail.com",
+//     username : "ayush444"
+//   })
+
+//   let registeredUser = User.register(fakeUser,"hello1234")
+//   res.send(registeredUser)
+// })
