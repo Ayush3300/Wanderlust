@@ -1,20 +1,9 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const wrapAsync = require("../utils/wrapAsync.js");
-const ExpressError = require("../utils/expressError.js");
-const { reviewSchema } = require("../schema.js");
 const Review = require("../models/review.model.js");
 const Listing = require("../models/listing.model.js");
-
-const validateReview = (req, res, next) => {
-  let { error } = reviewSchema.validate(req.body);
-  if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, errMsg);
-  } else {
-    next();
-  }
-};
+const { validateReview } = require("../middlewares.js");
 
 //Post Review Route
 router.post(
@@ -28,9 +17,9 @@ router.post(
 
     await newReview.save();
     await listing.save();
-    req.flash("success","New Review Created!")
+    req.flash("success", "New Review Created!");
     res.redirect(`/listings/${listing._id}`);
-  })
+  }),
 );
 
 //Delete Review
@@ -40,9 +29,9 @@ router.delete(
     let { id, reviewId } = req.params;
     await Listing.findByIdAndUpdate(id, { $pull: { review: reviewId } });
     await Review.findByIdAndDelete(reviewId);
-    req.flash("success","Review Deleted!")
+    req.flash("success", "Review Deleted!");
     res.redirect(`/listings/${id}`);
-  })
+  }),
 );
 
 module.exports = router;
