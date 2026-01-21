@@ -40,7 +40,7 @@ router.get(
   wrapAsync(async (req, res) => {
     const { id } = req.params;
     let listing = await Listing.findById(id)
-      .populate("review")
+      .populate({ path: "review", populate: { path: "author" } })
       .populate("owner");
     if (!listing) {
       req.flash("error", "Listing you requested for does not exits!");
