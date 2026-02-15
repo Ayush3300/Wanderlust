@@ -30,9 +30,10 @@ router
   .get(wrapAsync(listingController.showListing))
   //Update Route
   .put(
-    validateListing,
     isLoggedIn,
     isOwner,
+    upload.single("listing[image]"),
+    validateListing,
     wrapAsync(listingController.updateListing),
   )
   //Delete Route
