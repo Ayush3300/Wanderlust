@@ -1,4 +1,8 @@
 <% layout('/layouts/boilerplate') %>
+<script>
+  const mapToken = "<%= process.env.MAPTILER_KEY %>";
+  const listing = <%- JSON.stringify(listing)%>;
+</script>
 <body>
    <div class="row mt-3">
     <div class="col-8 offset-3">
@@ -34,8 +38,9 @@
 
     
     <div class ="col-6 offset-3 mb-3">
-      <hr>
+      
       <% if(currUser) { %>
+        <hr>
       <h4>Leave a review</h4>
       <form action="/listings/<%=listing._id %>/reviews" method="POST" novalidate class="needs-validations">
         <div class="mb-3 mt-3">
@@ -65,8 +70,9 @@
       <hr>
       <% } %>
 
-      <p><b>All Reviews </b></p>
+      <% if(listing.review.length > 0) { %>
         <div class="row">
+          <p><b>All Reviews </b></p>
         <% for(review of listing.review) { %>
           <div class="card mb-3 col-5 ms-5">
             <div class="card-body">
@@ -83,9 +89,14 @@
           </div>
         <% } %>
         </div>
-      
+      <% } %>
+    </div>
+    <div class ="col-6 offset-3 mb-3">
+      <h3>Where you'll be</h3>
+      <div id="map"></div>
     </div>
 
   </div>
-
 </body>
+
+<script src="/js/map.js"></script>
